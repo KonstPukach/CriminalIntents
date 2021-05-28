@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.Room
 import com.example.criminalintents.database.CrimeDatabase
+import com.example.criminalintents.database.migration_1_2
+import java.io.File
 import java.lang.IllegalStateException
 import java.util.*
 import java.util.concurrent.Executor
@@ -18,7 +20,7 @@ class CrimeRepository private constructor(context: Context) {
         context.applicationContext,
         CrimeDatabase::class.java,
         DATABASE_NAME
-    ).build()
+    ).addMigrations(migration_1_2).build()
 
     private val executor = Executors.newSingleThreadExecutor()  // new thread to execute db queries
 
@@ -51,5 +53,14 @@ class CrimeRepository private constructor(context: Context) {
         fun get(): CrimeRepository {
             return INSTANCE ?: throw IllegalStateException("CrimeRepository must be initialized")
         }
+    }
+
+
+    /* ##### PHOTOS ##### */
+
+    private val filesDir = context.applicationContext.filesDir
+
+    fun getPhotoFile(crime: Crime): File {
+        return File(filesDir, crime.photoFileName)
     }
 }
